@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/streams-practice-master/StreamPracticeTask.iml" filepath="$PROJECT_DIR$/streams-practice-master/StreamPracticeTask.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/streams-practice-master.iml" filepath="$PROJECT_DIR$/.idea/streams-practice-master.iml" />
     </modules>
   </component>
