@@ -186,7 +186,7 @@ public class PracticeTest {
     }
 
     @Test
-    public void shouldAllEmployeeSalaryGreaterThan1000() {
+    public void shouldAllEmployeeSalaryGreaterThan1000() throws Exception {
         boolean actualValue = Practice.checkIfThereIsNoSalaryLessThan1000();
         Assert.assertTrue(actualValue);
     }
