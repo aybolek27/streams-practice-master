@@ -4,11 +4,13 @@ import com.example.streampracticetask.model.*;
 import com.example.streampracticetask.service.*;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import static java.util.Comparator.comparing;
+import static java.util.Comparator.reverseOrder;
 
 @Component
 public class Practice {
@@ -106,7 +108,6 @@ public class Practice {
 
     // Display all the departments where manager name of the department is 'Steven'
     public static List<Department> getAllDepartmentsWhichManagerFirstNameIsSteven() {
-    
       return departmentService.readAll().stream()
               .filter(department -> department.getManager().getFirstName().equals("Steven"))
               .collect(Collectors.toList());
@@ -126,14 +127,15 @@ public class Practice {
     // Display the region of the IT department
     public static Region getRegionOfITDepartment() throws Exception {
         
-//   departmentService.readAll().stream()
-//                .filter(department -> department.getLocation().getCountry().getRegion().)
-//                .map(department -> department.getLocation().getCountry().getRegion())
-//              .distinct();
+   Optional<Region> regionOfItDepartment=departmentService.readAll().stream()
+                .filter(department -> department.getDepartmentName().equals("IT"))
+                .map(department -> department.getLocation().getCountry().getRegion())
+           .findFirst();
 
+    return regionOfItDepartment.get();
         
         
-        return new Region();
+//        return new Region();
     }
 
 
@@ -184,10 +186,12 @@ public class Practice {
 
     // Display the salary of the employee Grant Douglas (lastName: Grant, firstName: Douglas)
     public static Long getGrantDouglasSalary() throws Exception {
-//       Optional<Long> dogSalary=employeeService.readAll().stream()
-//                .filter(employee -> employee.getFirstName().equals("Douglas")&&employee.getLastName().equals("Grant"))
-//                .map(Employee::getSalary);
-        return 1L;
+       Optional<Long> dogSalary=employeeService.readAll().stream()
+                .filter(employee -> employee.getFirstName().equals("Douglas")&&employee.getLastName().equals("Grant"))
+                .map(Employee::getSalary)
+                                        .findFirst();
+       return dogSalary.get();
+//        return 1L;
     }
 
     // Display the maximum salary an employee gets
@@ -272,9 +276,18 @@ public class Practice {
 
     // Display the employee(s) who gets the minimum salary
     public static List<Employee> getMinSalaryEmployee() {
-       return employeeService.readAll().stream()
-                .reduce((t1,t2)->t1.getSalary()< t2.getSalary()?t1:t2)
-                .stream().collect(Collectors.toList());
+//       return employeeService.readAll().stream()
+//                .reduce((t1,t2)->t1.getSalary()< t2.getSalary()?t1:t2)
+//                .stream().collect(Collectors.toList());
+        return employeeService.readAll().stream()
+                       .filter(employee -> {
+                           try {
+                               return employee.getSalary().equals(getMinSalary());
+                           } catch (Exception e) {
+                               e.printStackTrace();
+                           }
+                           return Boolean.parseBoolean(null);
+                       }).collect(Collectors.toList());
 //        return new ArrayList<>();
     }
 
@@ -365,34 +378,61 @@ public class Practice {
 
     // Display all the job histories in ascending order by start date
     public static List<JobHistory> getAllJobHistoriesInAscendingOrder() {
-     
-        return new ArrayList<>();
+     return jobHistoryService.readAll().stream()
+             .sorted(comparing(JobHistory::getStartDate))
+             .collect(Collectors.toList());
+//        return new ArrayList<>();
     }
 
     // Display all the job histories in descending order by start date
     public static List<JobHistory> getAllJobHistoriesInDescendingOrder() {
-//        jobHistoryService.readAll().stream()
-//                .sorted(Comparator.comparing(J))
+//        return jobHistoryService.readAll().stream()
+//                .sorted(comparing(JobHistory::getStartDate).reversed())
 //                .collect(Collectors.toList());
+//        List<JobHistory> result=new ArrayList<>();
+//        result=getAllJobHistoriesInAscendingOrder();
+//        return result.stream()
+//                       .sorted(reverseOrder())
+//                       .collect(Collectors.toList());
+
+//        .sorted((f1, f2) -> Long.compare(f2.lastModified(), f1.lastModified())
         return new ArrayList<>();
+    
+        
     }
 
     // Display all the job histories where the start date is after 01.01.2005
     public static List<JobHistory> getAllJobHistoriesStartDateAfterFirstDayOfJanuary2005() {
-//        jobHistoryService.readAll().stream()
-//                .filter()
-        return new ArrayList<>();
+        LocalDate startDate= LocalDate.parse("2005-01-01");
+           return jobHistoryService.readAll().stream()
+                    .filter(jobHistory -> jobHistory.getStartDate().isAfter(startDate))
+                    .collect(Collectors.toList());
+//        return new ArrayList<>();
     }
+    
+    
 
     // Display all the job histories where the end date is 31.12.2007 and the job title of job is 'Programmer'
     public static List<JobHistory> getAllJobHistoriesEndDateIsLastDayOfDecember2007AndJobTitleIsProgrammer() {
-        //TODO Implement the method
-        return new ArrayList<>();
+        LocalDate endDate= LocalDate.parse("2007-12-31");
+       return jobHistoryService.readAll().stream()
+                .filter(jobHistory -> jobHistory.getEndDate().isEqual(endDate)&&jobHistory.getJob().getJobTitle().equals("Programmer"))
+                .collect(Collectors.toList());
+        
+//        return new ArrayList<>();
     }
 
     // Display the employee whose job history start date is 01.01.2007 and job history end date is 31.12.2007 and department's name is 'Shipping'
     public static Employee getEmployeeOfJobHistoryWhoseStartDateIsFirstDayOfJanuary2007AndEndDateIsLastDayOfDecember2007AndDepartmentNameIsShipping() throws Exception {
-        //TODO Implement the method
+        LocalDate endDate= LocalDate.parse("2007-12-31");
+        LocalDate startDate= LocalDate.parse("2007-01-01");
+        
+//        Optional<Employee> emp=jobHistoryService.readAll().stream()
+//                                       .filter(jobHistory -> jobHistory.getStartDate().isEqual(startDate)&&jobHistory.getEndDate().isEqual(endDate)&&jobHistory.getDepartment().equals("Shipping"))
+//                                       .map(Employee::)
+        
+        
+        
         return new Employee();
     }
 
@@ -413,15 +453,17 @@ public class Practice {
 //        return new ArrayList<>();
     }
 
+
     // Display the number of employees whose job title is programmer and department name is 'IT'
     public static Long getNumberOfEmployeesWhoseJobTitleIsProgrammerAndDepartmentNameIsIT() {
                Long sum = employeeService.readAll().stream()
                 .filter(employee -> employee.getDepartment().equals("IT"))
                 .filter(employee -> employee.getJob().getJobTitle().equals("Programmer"))
-                .collect(Collectors.counting());
-               return sum;
+                                  .count();
+              return sum;
 //        return 1L;
     }
+
 
     // Display all the employees whose department id is 50, 80, or 100
     public static List<Employee> getAllEmployeesDepartmentIdIs50or80or100() {
@@ -448,24 +490,18 @@ public class Practice {
 
     // Display the length of the longest full name(s)
     public static Integer getLongestNameLength() throws Exception {
-    
-//    Optional<Integer> firstName=employeeService.readAll().stream()
-//            .map(employee -> employee.getFirstName())
-//            .map(String::length)
-//            .reduce(Integer::max);
-//
-//        Optional<Integer> lastName=employeeService.readAll().stream()
-//                .map(employee -> employee.getLastName())
-//                .map(String::length)
-//                .reduce(Integer::max);
-//
-//   return firstName.get()+lastName.get();
-        return 1;
+      Optional<Integer> longestName=getAllEmployeesFullNames().stream()
+                        .map(s->s.length())
+              .reduce(Integer::max);
+        return longestName.get();
+//        return 1;
     }
 
     // Display the employee(s) with the longest full name(s)
     public static List<Employee> getLongestNamedEmployee() {
-        //TODO Implement the method
+//        employeeService.readAll().stream()
+//                .filter()
+    
         return new ArrayList<>();
     }
 
